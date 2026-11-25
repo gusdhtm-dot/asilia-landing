@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>아실리아 | 예약 접수 완료</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--ivory:#f8f4ef;--white:#fffdfb;--ink:#221a16;--sub:#7a6c62;--line:#e6dbd0;--wine:#7d1f2e;--dark:#25100f;--rose:#d4808b}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;color:var(--ink);font-family:Pretendard,-apple-system,sans-serif;letter-spacing:-.015em;word-break:keep-all;-webkit-font-smoothing:antialiased;background:radial-gradient(ellipse 70% 55% at 50% 30%,#5a2229 0%,#381518 45%,var(--dark) 100%)}
+.logo{font-family:"Cormorant Garamond",serif;font-size:32px;color:#fff;margin-bottom:28px}
+.card{width:100%;max-width:520px;background:var(--white);border-radius:24px;padding:44px 36px 36px;text-align:center}
+.ok{width:64px;height:64px;border-radius:50%;background:var(--wine);margin:0 auto 22px;position:relative}
+.ok::after{content:"";position:absolute;left:21px;top:19px;width:22px;height:12px;border-left:4px solid #fff;border-bottom:4px solid #fff;transform:rotate(-45deg)}
+h1{margin:0;font-size:28px;line-height:1.4;letter-spacing:-.045em}
+.sum{margin:14px 0 0;font-size:16px;color:var(--sub)}
+.sum b{color:var(--wine)}
+ol{list-style:none;margin:32px 0 0;padding:0;text-align:left}
+li{display:grid;grid-template-columns:44px 1fr;gap:14px;align-items:start;padding:20px 0;border-top:1px solid var(--line)}
+li .n{width:44px;height:44px;border-radius:50%;background:var(--ivory);color:var(--wine);font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center}
+li b{display:block;font-size:18px;margin-top:1px}
+li span{display:block;color:var(--sub);font-size:15px;margin-top:3px;line-height:1.55}
+.note{margin:6px 0 0;background:var(--ivory);border-radius:14px;padding:15px 16px;font-size:14.5px;line-height:1.6;color:var(--ink)}
+.note b{color:var(--wine)}
+@media(max-width:480px){.card{padding:36px 22px 26px}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="logo">Asilia</div>
+<main class="card">
+ <div class="ok" aria-hidden="true"></div>
+ <h1>방문 예약이<br>접수됐어요</h1>
+ <p class="sum" id="sum"></p>
+ <ol>
+  <li><span class="n">1</span><div><b>예약 안내 문자 발송</b><span>남겨주신 번호로 예약 안내 문자를 보내드려요</span></div></li>
+  <li><span class="n">2</span><div><b>매니저 전화로 예약 확정</b><span>아실리아 매니저가 전화를 드려 방문 일정을 확정해요</span></div></li>
+ </ol>
+ <p class="note">모르는 번호라도 <b>아실리아 매니저 전화</b>일 수 있으니 꼭 받아주세요.</p>
+</main>
+<script src="../config.js"></script>
+<script>
+// 예약 페이지에서 넘긴 지점·일시 표시 (주소창에는 개인정보를 싣지 않음)
+var r = null;
+try{ r = JSON.parse(sessionStorage.getItem("asilia_booking") || "null"); }catch(e){}
+if(r && r.branch) document.getElementById("sum").innerHTML = "<b>아실리아 " + r.branch + "</b> · " + r.when;
+// 메타 픽셀: 실제 예약 직후에만 Lead (새로고침·직접 접속은 제외)
+(function(){
+  var id = (window.ASILIA_CONFIG || {}).META_PIXEL_ID; if(!id) return;
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', id); fbq('track', 'PageView');
+  if(r && r.lead){ fbq('track', 'Lead'); r.lead = 0; try{ sessionStorage.setItem("asilia_booking", JSON.stringify(r)); }catch(e){} }
+})();
+</script>
+</body>
+</html>

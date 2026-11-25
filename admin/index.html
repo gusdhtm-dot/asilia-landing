@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>방문 예약 관리 | 아실리아 어드민</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wine:#7d1f2e; --dark:#25100f; --ink:#221a16; --g1:#5f534b; --g2:#8f8279; --line:#e9e0d7; --soft:#f6f1ec;
+    --red:#c8372d; --green:#18884a; --blue:#2458c6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Pretendard,-apple-system,"Malgun Gothic",sans-serif;background:var(--soft);color:var(--ink);font-size:15px;-webkit-font-smoothing:antialiased;letter-spacing:-.02em}
+  button,input,select,textarea{font:inherit;color:inherit}
+  .hide{display:none!important}
+
+  .logo{display:flex;align-items:baseline;gap:8px}
+  .logo b{font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:600;color:var(--wine);letter-spacing:.01em}
+  .logo small{font-size:12.5px;font-weight:700;color:var(--g2)}
+
+  /* 로그인 */
+  .login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse 70% 55% at 50% 30%,#5a2229 0%,#381518 45%,var(--dark) 100%)}
+  .login form{width:100%;max-width:360px;background:#fff;border-radius:18px;padding:32px 24px}
+  .login h1{margin-top:18px;font-size:23px;font-weight:800;letter-spacing:-.03em}
+  .login p{margin-top:4px;color:var(--g2)}
+  .login label{display:block;margin-top:16px;font-size:14px;font-weight:700}
+  .login input{width:100%;height:50px;margin-top:6px;border:1.5px solid var(--line);border-radius:10px;padding:0 14px;font-size:16px;outline:none}
+  .login input:focus{border-color:var(--wine)}
+  .btn{height:46px;border:0;border-radius:10px;background:var(--wine);color:#fff;font-weight:800;cursor:pointer;padding:0 18px}
+  .btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+  .btn.del{background:#fff;color:var(--red);border:1.5px solid #f1cdc9}
+  .btn:disabled{opacity:.5;cursor:default}
+  .login .btn{width:100%;margin-top:22px;height:50px}
+  .err{margin-top:12px;color:var(--red);font-size:13px;min-height:18px}
+
+  /* 상단 */
+  .top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:14px;height:62px;padding:0 20px;background:#fff;border-bottom:1px solid var(--line)}
+  .top .right{margin-left:auto;display:flex;gap:8px}
+  .top a,.top button{height:36px;line-height:33px;border-radius:999px;border:1.5px solid var(--line);background:#fff;padding:0 14px;cursor:pointer;font-size:13px;font-weight:700;text-decoration:none;color:var(--ink)}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:22px 20px 60px}
+
+  /* 요약 */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .stat{background:#fff;border-radius:12px;padding:16px 18px;cursor:pointer;border:2px solid transparent;text-align:left}
+  .stat.on{border-color:var(--wine)}
+  .stat small{display:block;font-size:13px;color:var(--g2);font-weight:700}
+  .stat b{display:block;font-size:30px;font-weight:900;letter-spacing:-.03em;margin-top:2px}
+  .stat.hot b{color:var(--wine)}
+
+  /* 필터 */
+  .bar{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center}
+  .bar select,.bar input{height:42px;border:1.5px solid var(--line);border-radius:10px;background:#fff;padding:0 12px;outline:none}
+  .bar input[type=search]{flex:1;min-width:180px}
+  .bar .btn{height:42px;font-size:14px}
+  .bar .count{margin-left:auto;color:var(--g2);font-size:14px}
+
+  /* 목록 */
+  .list{margin-top:14px;background:#fff;border-radius:12px;overflow:hidden}
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;font-size:13px;color:var(--g2);font-weight:700;padding:12px 14px;border-bottom:1px solid var(--line);background:#fcfaf8;white-space:nowrap}
+  td{padding:15px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tr.row{cursor:pointer}
+  tr.row:hover td{background:#fcfaf8}
+  tr.row.sel td{background:#f6eeea}
+  .when{color:var(--g1);white-space:nowrap;font-size:14px}
+  .nm{font-weight:800}
+  .ph{font-feature-settings:"tnum";white-space:nowrap}
+  .br{display:inline-block;font-size:13px;font-weight:700;background:var(--soft);padding:4px 9px;border-radius:6px;white-space:nowrap}
+  .visit{white-space:nowrap;font-weight:700}
+  .visit .d{display:inline-block;font-size:12px;font-weight:800;color:#fff;background:var(--wine);border-radius:5px;padding:2px 6px;margin-right:6px}
+  .visit .d.tm{background:#b5677a}
+  .visit.past{color:var(--g2);font-weight:500}
+  .src{font-size:13px;color:var(--g2);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .badge{display:inline-block;font-size:13px;font-weight:800;padding:4px 10px;border-radius:999px;white-space:nowrap;border:1.5px solid transparent}
+  .b-신규{background:var(--wine);color:#fff}
+  .b-문자발송{background:#fff;color:var(--wine);border-color:var(--wine)}
+  .b-부재중{background:#fff4d1;color:#7a5b00}
+  .b-예약확정{background:#e6eefc;color:var(--blue)}
+  .b-방문완료{background:#e5f6ec;color:var(--green)}
+  .b-노쇼{background:#fcebea;color:var(--red)}
+  .b-취소{background:var(--soft);color:var(--g1)}
+  .empty{padding:60px 20px;text-align:center;color:var(--g2)}
+  .more{display:block;width:100%;height:46px;border:0;background:#fcfaf8;color:var(--g1);font-weight:700;cursor:pointer}
+
+  /* 상세 */
+  .dim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:20}
+  .panel{position:fixed;top:0;right:0;bottom:0;width:440px;max-width:100%;background:#fff;z-index:21;display:flex;flex-direction:column;box-shadow:-20px 0 40px -20px rgba(0,0,0,.3)}
+  .panel .ph1{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}
+  .panel .ph1 b{font-size:18px;font-weight:900}
+  .panel .x{width:34px;height:34px;border-radius:50%;border:0;background:var(--soft);cursor:pointer;font-size:16px}
+  .panel .body{flex:1;overflow:auto;padding:20px}
+  .acts2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .call,.sms{display:flex;align-items:center;justify-content:center;height:52px;white-space:nowrap;border-radius:12px;text-decoration:none;font-size:16.5px;font-weight:800;border:0;cursor:pointer}
+  .call{background:var(--wine);color:#fff}
+  .sms{background:#fff;color:var(--wine);border:1.5px solid var(--wine)}
+  .smsbox{margin-top:10px;background:var(--soft);border-radius:10px;padding:12px 14px;font-size:13.5px;line-height:1.6;color:var(--g1);white-space:pre-wrap}
+  .smsbox button{margin-top:8px;height:32px;padding:0 12px;border-radius:8px;border:1.5px solid var(--line);background:#fff;font-size:13px;font-weight:700;cursor:pointer}
+  dl.info{margin-top:18px}
+  dl.info div{display:flex;padding:11px 0;border-bottom:1px solid var(--line);gap:12px}
+  dl.info dt{width:84px;flex:none;color:var(--g2);font-size:14px}
+  dl.info dd{flex:1;font-weight:600;word-break:break-all;white-space:pre-wrap}
+  .edit{margin-top:22px}
+  .edit label{display:block;font-size:14px;font-weight:800;margin-bottom:8px}
+  .edit .hint{font-weight:500;color:var(--g2);font-size:13px;margin-left:6px}
+  .vrow{display:grid;grid-template-columns:1.4fr 1fr;gap:8px}
+  .vrow input,.vrow select{height:44px;border:1.5px solid var(--line);border-radius:10px;padding:0 12px;background:#fff;outline:none}
+  .sts{display:flex;flex-wrap:wrap;gap:6px}
+  .sts button{height:38px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-weight:700;cursor:pointer}
+  .sts button.on{background:var(--wine);border-color:var(--wine);color:#fff}
+  .edit textarea{width:100%;height:110px;border:1.5px solid var(--line);border-radius:10px;padding:12px;resize:vertical;outline:none}
+  .edit textarea:focus{border-color:var(--wine)}
+  .panel .foot{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center}
+  .panel .foot .msg{font-size:13px;color:var(--green);margin-right:auto}
+
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--dark);color:#fff;padding:12px 18px;border-radius:10px;font-weight:700;z-index:40}
+
+  @media (max-width:760px){
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .top .logo small{display:none}
+    thead{display:none}
+    table,tbody,tr,td{display:block;width:100%}
+    tr.row{padding:14px 16px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:4px 10px}
+    tr.row td{padding:0;border:0;background:none!important}
+    tr.row td.c-when{grid-column:1/-1;order:-1}
+    tr.row td.c-src{display:none}
+    tr.row td.c-visit{grid-column:1/-1}
+  }
+</style>
+</head>
+<body>
+
+<!-- 로그인 -->
+<div class="login" id="loginView">
+  <form id="loginForm">
+    <div class="logo"><b>Asilia</b><small>예약 관리</small></div>
+    <h1>방문 예약 관리</h1>
+    <p>관리자 비밀번호를 입력하세요</p>
+    <input type="text" name="username" value="asilia-admin" autocomplete="username" hidden>
+    <label>비밀번호<input type="password" name="pw" autocomplete="current-password" required></label>
+    <button class="btn" type="submit">로그인</button>
+    <div class="err" id="loginErr"></div>
+  </form>
+</div>
+
+<!-- 어드민 -->
+<div class="hide" id="appView">
+  <header class="top">
+    <div class="logo"><b>Asilia</b><small>방문 예약 관리</small></div>
+    <div class="right">
+      <a class="hide" id="openSheet" target="_blank" rel="noopener">시트 열기</a>
+      <button type="button" id="logout">로그아웃</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="stats">
+      <button class="stat on" data-f="all"><small>전체 예약</small><b id="sAll">-</b></button>
+      <button class="stat hot" data-f="신규"><small>신규 (문자 전)</small><b id="sNew">-</b></button>
+      <button class="stat" data-f="today"><small>오늘 방문 예정</small><b id="sToday">-</b></button>
+      <button class="stat" data-f="예약 확정"><small>예약 확정</small><b id="sDeal">-</b></button>
+    </div>
+
+    <div class="bar">
+      <select id="fStatus">
+        <option value="">상태 전체</option>
+      </select>
+      <select id="fBranch">
+        <option value="">지점 전체</option>
+        <option>목동점</option><option>마곡발산점</option><option>청담점</option><option>잠실점</option><option>문래점</option>
+      </select>
+      <select id="fVisit">
+        <option value="">방문일 전체</option>
+        <option value="today">오늘 방문</option>
+        <option value="tomorrow">내일 방문</option>
+        <option value="week">7일 안 방문</option>
+        <option value="past">지난 방문일</option>
+      </select>
+      <input type="search" id="fQ" placeholder="이름·연락처·메모 검색">
+      <button class="btn ghost" type="button" id="reload">새로고침</button>
+      <span class="count" id="count"></span>
+    </div>
+
+    <div class="list">
+      <table>
+        <thead><tr><th>접수 시각</th><th>이름</th><th>연락처</th><th>지점</th><th>방문 희망 일시</th><th>유입</th><th>상태</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty hide" id="empty">조건에 맞는 예약이 없어요</div>
+      <button class="more hide" id="more" type="button">더 보기</button>
+    </div>
+  </main>
+</div>
+
+<!-- 상세 -->
+<div class="dim hide" id="dim"></div>
+<aside class="panel hide" id="panel" aria-label="예약 상세">
+  <div class="ph1"><b id="pTitle">예약 상세</b><button class="x" type="button" id="pClose" aria-label="닫기">✕</button></div>
+  <div class="body">
+    <div class="acts2">
+      <a class="call" id="pCall" href="#">전화 걸기</a>
+      <a class="sms" id="pSms" href="#">문자 보내기</a>
+    </div>
+    <div class="smsbox" id="pSmsText"></div>
+    <dl class="info" id="pInfo"></dl>
+    <div class="edit">
+      <label>방문 일시<span class="hint">통화로 바뀌면 수정</span></label>
+      <div class="vrow"><input type="date" id="pDate"><select id="pTime"></select></div>
+    </div>
+    <div class="edit">
+      <label>상태</label>
+      <div class="sts" id="pSts"></div>
+    </div>
+    <div class="edit">
+      <label for="pMemo">메모</label>
+      <textarea id="pMemo" placeholder="통화 내용, 부재 횟수, 특이사항 등"></textarea>
+    </div>
+  </div>
+  <div class="foot"><button class="btn del" type="button" id="pDel">삭제</button><span class="msg" id="pMsg"></span><button class="btn" type="button" id="pSave">저장</button></div>
+</aside>
+
+<script src="../config.js"></script>
+<script>
+(function(){
+  var STATUSES = ['신규','문자 발송','부재중','예약 확정','방문 완료','노쇼','취소'];
+  var TIMES = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
+  var W = ['일','월','화','수','목','금','토'];
+  var PAGE = 100;
+  var $ = function(id){ return document.getElementById(id); };
+  var cfg = window.ASILIA_CONFIG || {};
+  $('fStatus').innerHTML += STATUSES.map(function(s){ return '<option>' + s + '</option>'; }).join('');
+  $('pTime').innerHTML = TIMES.map(function(t){ return '<option>' + t + '</option>'; }).join('');
+  if (!cfg.SHEET_API_URL || cfg.SHEET_API_URL.indexOf('YOUR-') >= 0) {
+    $('loginErr').textContent = 'config.js에 구글 시트 웹 앱 주소를 먼저 넣어 주세요.';
+    return;
+  }
+  if (cfg.SHEET_URL) { $('openSheet').href = cfg.SHEET_URL; $('openSheet').classList.remove('hide'); }
+
+  var KEY = 'asilia_admin_pw';
+  var pw = null;
+  try { pw = sessionStorage.getItem(KEY); } catch (e) {}
+  var leads = [], shown = PAGE, cur = null;
+
+  // 구글 시트 API 호출 (비밀번호는 주소가 아닌 본문으로 전송)
+  async function api(action, extra){
+    var body = Object.assign({ action: action, password: pw }, extra || {});
+    try {
+      var res = await fetch(cfg.SHEET_API_URL, { method:'POST', body: JSON.stringify(body) });
+      return await res.json();
+    } catch (e) { return { ok:false, error:'network' }; }
+  }
+  var ERR = { wrong_password:'비밀번호가 맞지 않아요.', locked:'실패가 많아 10분간 잠겼어요. 잠시 후 다시 시도해 주세요.', not_configured:'시트에 관리자 비밀번호(ADMIN_PASSWORD)가 설정되지 않았어요.', network:'시트에 연결할 수 없어요. 웹 앱 주소를 확인해 주세요.' };
+
+  // ---------- 로그인 ----------
+  $('loginForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    var btn = e.target.querySelector('button'); btn.disabled = true; $('loginErr').textContent = '';
+    pw = e.target.pw.value;
+    var r = await api('login');
+    btn.disabled = false;
+    if (!r.ok) { pw = null; $('loginErr').textContent = ERR[r.error] || '로그인할 수 없어요.'; return; }
+    try { sessionStorage.setItem(KEY, pw); } catch (e2) {}
+    enter();
+  });
+  $('logout').addEventListener('click', function(){ try { sessionStorage.removeItem(KEY); } catch (e) {} location.reload(); });
+
+  function enter(){
+    $('loginView').classList.add('hide'); $('appView').classList.remove('hide');
+    load();
+  }
+  if (pw) enter();
+
+  // ---------- 불러오기 ----------
+  async function load(){
+    $('reload').disabled = true;
+    var r = await api('list');
+    $('reload').disabled = false;
+    if (!r.ok) {
+      if (r.error === 'wrong_password' || r.error === 'locked') { try { sessionStorage.removeItem(KEY); } catch (e) {} location.reload(); return; }
+      toast(ERR[r.error] || '불러오기 실패'); return;
+    }
+    leads = r.rows || [];
+    stats(); render();
+  }
+  $('reload').addEventListener('click', load);
+  setInterval(function(){ if (!document.hidden && $('panel').classList.contains('hide')) load(); }, 60000);
+
+  // ---------- 날짜 ----------
+  function ymd(d){ var p = function(n){ return String(n).padStart(2,'0'); }; return d.getFullYear() + '-' + p(d.getMonth()+1) + '-' + p(d.getDate()); }
+  function addDays(n){ var d = new Date(); d.setDate(d.getDate() + n); return ymd(d); }
+  var TODAY = function(){ return ymd(new Date()); };
+  function vlabel(date){
+    if (!date) return '';
+    if (date === TODAY()) return '<span class="d">오늘</span>';
+    if (date === addDays(1)) return '<span class="d tm">내일</span>';
+    return '';
+  }
+  function vtext(l){
+    if (!l.date) return '-';
+    var d = new Date(l.date + 'T00:00:00');
+    return (d.getMonth()+1) + '월 ' + d.getDate() + '일(' + W[d.getDay()] + ') ' + (l.time || '');
+  }
+  var ACTIVE = ['신규','문자 발송','부재중','예약 확정'];
+
+  function stats(){
+    $('sAll').textContent = leads.length;
+    $('sNew').textContent = leads.filter(function(l){ return l.status === '신규'; }).length;
+    $('sToday').textContent = leads.filter(function(l){ return l.date === TODAY() && ACTIVE.indexOf(l.status) >= 0; }).length;
+    $('sDeal').textContent = leads.filter(function(l){ return l.status === '예약 확정'; }).length;
+  }
+
+  // ---------- 필터 ----------
+  document.querySelectorAll('.stat').forEach(function(b){
+    b.addEventListener('click', function(){
+      var f = b.dataset.f;
+      document.querySelectorAll('.stat').forEach(function(x){ x.classList.toggle('on', x === b); });
+      $('fStatus').value = (f === '신규' || f === '예약 확정') ? f : '';
+      $('fVisit').value = f === 'today' ? 'today' : '';
+      shown = PAGE; render();
+    });
+  });
+  ['fStatus','fBranch','fVisit'].forEach(function(id){ $(id).addEventListener('change', function(){ shown = PAGE; render(); }); });
+  $('fQ').addEventListener('input', function(){ shown = PAGE; render(); });
+  $('more').addEventListener('click', function(){ shown += PAGE; render(); });
+
+  function filtered(){
+    var st = $('fStatus').value, br = $('fBranch').value, vs = $('fVisit').value, q = $('fQ').value.trim().replace(/-/g,'');
+    var t = TODAY(), tm = addDays(1), wk = addDays(6);
+    var list = leads.filter(function(l){
+      if (st && l.status !== st) return false;
+      if (br && l.branch !== br) return false;
+      if (vs === 'today' && l.date !== t) return false;
+      if (vs === 'tomorrow' && l.date !== tm) return false;
+      if (vs === 'week' && !(l.date >= t && l.date <= wk)) return false;
+      if (vs === 'past' && !(l.date && l.date < t)) return false;
+      if (q) {
+        var hay = [l.name, l.phone, l.memo, l.purpose].join(' ');
+        if (hay.indexOf(q) < 0) return false;
+      }
+      return true;
+    });
+    // 방문일 필터를 쓰면 방문 시간순
+    if (vs) list.sort(function(a,b){ return (a.date + a.time).localeCompare(b.date + b.time); });
+    return list;
+  }
+
+  // ---------- 목록 ----------
+  function render(){
+    var list = filtered(), t = TODAY();
+    $('count').textContent = list.length + '건';
+    $('empty').classList.toggle('hide', list.length > 0);
+    $('more').classList.toggle('hide', list.length <= shown);
+    $('rows').innerHTML = list.slice(0, shown).map(function(l){
+      return '<tr class="row' + (cur && cur.id === l.id ? ' sel' : '') + '" data-id="' + esc(l.id) + '">' +
+        '<td class="c-when when">' + fmt(l.created_at) + '</td>' +
+        '<td class="nm">' + (esc(l.name) || '<span style="color:var(--g2)">이름 없음</span>') + '</td>' +
+        '<td class="ph">' + phone(l.phone) + '</td>' +
+        '<td><span class="br">' + esc(l.branch || '-') + '</span></td>' +
+        '<td class="c-visit visit' + (l.date && l.date < t ? ' past' : '') + '">' + vlabel(l.date) + esc(vtext(l)) + '</td>' +
+        '<td class="c-src"><div class="src">' + esc(src(l)) + '</div></td>' +
+        '<td><span class="badge b-' + esc(String(l.status).replace(/ /g,'')) + '">' + esc(l.status) + '</span></td>' +
+      '</tr>';
+    }).join('');
+  }
+  $('rows').addEventListener('click', function(e){
+    var tr = e.target.closest('tr.row'); if (!tr) return;
+    open(leads.find(function(l){ return String(l.id) === tr.dataset.id; }));
+  });
+
+  // ---------- 상세 ----------
+  var pick = null;
+  function smsText(l){
+    return '[아실리아] ' + (l.name || '고객') + '님, ' + l.branch + ' ' + vtext(l) + ' 첫 방문 체험 예약이 접수됐어요.\n' +
+      '아실리아 매니저가 곧 전화드려 예약을 확정해 드릴게요. 모르는 번호라도 꼭 받아주세요.';
+  }
+  function open(l){
+    cur = l; pick = l.status;
+    $('pTitle').textContent = (l.name || '이름 없음') + ' · ' + (l.branch || '');
+    $('pCall').href = 'tel:' + l.phone;
+    
+    drawSms(l);
+    var info = [
+      ['접수 시각', fmt(l.created_at, true)],
+      ['연락처', phone(l.phone)],
+      ['지점', l.branch || '-'],
+      ['희망 일시', vtext(l)],
+      ['관리 목적', l.purpose || '-'],
+      ['행사 날짜', l.event || '-'],
+      ['유입 경로', src(l) || '-'],
+      ['캠페인', l.utm_campaign || '-'],
+      ['광고(소재)', l.utm_content || '-'],
+      ['수정 시각', l.updated_at ? fmt(l.updated_at, true) : '-']
+    ];
+    $('pInfo').innerHTML = info.map(function(i){ return '<div><dt>' + i[0] + '</dt><dd>' + esc(i[1]) + '</dd></div>'; }).join('');
+    $('pDate').value = l.date || '';
+    $('pTime').value = TIMES.indexOf(l.time) >= 0 ? l.time : TIMES[0];
+    drawSts();
+    $('pMemo').value = l.memo || '';
+    $('pMsg').textContent = '';
+    $('dim').classList.remove('hide'); $('panel').classList.remove('hide');
+    render();
+  }
+  function drawSms(l){
+    var body = smsText(l), ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    $('pSms').href = 'sms:' + l.phone + (ios ? '&' : '?') + 'body=' + encodeURIComponent(body);
+    $('pSmsText').innerHTML = esc(body) + '<br><button type="button" id="pCopy">문구 복사</button>';
+  }
+  function drawSts(){
+    $('pSts').innerHTML = STATUSES.map(function(s){ return '<button type="button" class="' + (s === pick ? 'on' : '') + '">' + s + '</button>'; }).join('');
+  }
+  $('pSts').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if (!b) return;
+    pick = b.textContent; drawSts();
+  });
+  // 문자 보내기를 누르면 상태를 '문자 발송'으로 바꿔 둠 (저장은 직접)
+  $('pSms').addEventListener('click', function(){
+    if (cur && pick === '신규') { pick = '문자 발송'; drawSts(); $('pMsg').style.color = 'var(--wine)'; $('pMsg').textContent = '상태 바뀜 · 저장을 눌러주세요'; }
+  });
+  $('pSmsText').addEventListener('click', function(e){
+    if (e.target.id !== 'pCopy' || !cur) return;
+    navigator.clipboard.writeText(smsText(cur)).then(function(){ toast('문구를 복사했어요'); }, function(){ toast('복사가 안 돼요. 직접 선택해 복사해 주세요'); });
+  });
+  function close(){ $('dim').classList.add('hide'); $('panel').classList.add('hide'); cur = null; render(); }
+  $('pClose').addEventListener('click', close);
+  $('dim').addEventListener('click', close);
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && cur) close(); });
+
+  $('pSave').addEventListener('click', async function(){
+    if (!cur) return;
+    var btn = this; btn.disabled = true;
+    var r = await api('update', { id: cur.id, status: pick, memo: $('pMemo').value.trim().slice(0, 2000), date: $('pDate').value, time: $('pTime').value });
+    btn.disabled = false;
+    if (!r.ok) { $('pMsg').style.color = 'var(--red)'; $('pMsg').textContent = '저장 실패'; return; }
+    Object.assign(cur, r.row); open(cur);
+    $('pMsg').style.color = ''; $('pMsg').textContent = '저장됐어요';
+    stats(); render();
+  });
+
+  $('pDel').addEventListener('click', async function(){
+    if (!cur) return;
+    var who = (cur.name || '이름 없음') + ' · ' + phone(cur.phone);
+    if (!confirm('이 예약을 삭제할까요?\n\n' + who + '\n\n구글 시트에서도 지워지고 되돌릴 수 없어요.')) return;
+    var btn = this; btn.disabled = true;
+    var r = await api('remove', { id: cur.id });
+    btn.disabled = false;
+    if (!r.ok) { $('pMsg').style.color = 'var(--red)'; $('pMsg').textContent = '삭제 실패'; return; }
+    var id = cur.id;
+    leads = leads.filter(function(l){ return l.id !== id; });
+    close(); stats(); toast('삭제했어요');
+  });
+
+  // ---------- 도우미 ----------
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]; }); }
+  function phone(p){ p = String(p || ''); return p.length === 11 ? p.slice(0,3) + '-' + p.slice(3,7) + '-' + p.slice(7) : p.length === 10 ? p.slice(0,3) + '-' + p.slice(3,6) + '-' + p.slice(6) : p; }
+  function src(l){ return [l.utm_source, l.utm_medium].filter(Boolean).join(' · ') || (l.referrer ? '직접 · ' + l.referrer.replace(/^https?:\/\//,'').split('/')[0] : '직접 유입'); }
+  function fmt(d, full){
+    d = new Date(d);
+    var p = function(n){ return String(n).padStart(2,'0'); };
+    var t = p(d.getHours()) + ':' + p(d.getMinutes());
+    if (!full && ymd(d) === TODAY()) return '오늘 ' + t;
+    return (full ? d.getFullYear() + '.' : '') + p(d.getMonth()+1) + '.' + p(d.getDate()) + ' ' + t;
+  }
+  var tt;
+  function toast(m){ var el = document.createElement('div'); el.className = 'toast'; el.textContent = m; document.body.appendChild(el); clearTimeout(tt); tt = setTimeout(function(){ el.remove(); }, 2500); }
+})();
+</script>
+</body>
+</html>
