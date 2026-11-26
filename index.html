@@ -6,7 +6,7 @@
 <title>아실리아 | 누워서 받는 체지방 관리</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Nanum+Pen+Script&display=swap" rel="stylesheet">
 <style>
 :root{
   --ivory:#f8f4ef; --ivory2:#f0e8df; --white:#fffdfb; --ink:#221a16; --sub:#7a6c62; --line:#e6dbd0;
@@ -39,18 +39,79 @@ a{color:inherit}
 
 /* 1 첫 화면: 비포애프터 + 3만원 */
 .hero{position:relative;color:#fff;overflow:hidden;background:radial-gradient(ellipse 70% 60% at 35% 45%,#5a2229 0%,#381518 45%,var(--dark) 100%);padding:118px 0 72px}
-.h-top{text-align:center}
-.hero .tag{margin:0 0 10px;font-size:16px;font-weight:600;color:var(--rose)}
-.hero h1{font-size:clamp(30px,3.6vw,46px);line-height:1.3;font-weight:700;letter-spacing:-.055em;margin:0}
-.hero h1 br{display:none}
+.hero{text-align:center}
+.hero::before{content:"";position:absolute;inset:0;background:url(img/lobby_mokdong.jpg) center/cover;opacity:.12;filter:grayscale(.3)}
+.hero .in{position:relative}
+.rot{margin:0 0 16px;height:40px;overflow:hidden}
+.rot span{display:inline-block;padding:8px 18px;border:1.5px solid var(--rose);border-radius:8px;background:rgba(125,31,46,.55);font-size:16px;font-weight:700;color:#fff;transition:transform .45s,opacity .45s}
+.rot span.out{transform:translateY(-120%);opacity:0}
+.rot span.in0{transform:translateY(120%);opacity:0;transition:none}
+.type{margin:0;font-size:clamp(28px,3.4vw,44px);line-height:1.3;font-weight:700;letter-spacing:-.05em;min-height:1.3em}
+.caret{display:inline-block;width:3px;height:.95em;margin-left:4px;vertical-align:-.1em;background:var(--rose);animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.kwrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:40px;margin-top:34px}
+.kpi{display:flex;flex-direction:column;gap:18px;min-width:340px}
+.kx{display:flex;flex-direction:column;align-items:center;opacity:0;transform:translateY(18px);transition:opacity .6s,transform .6s}
+.kx.on{opacity:1;transform:none}
+.kl{display:inline-block;padding:5px 16px;border:1.5px solid rgba(255,255,255,.55);border-radius:6px;font-size:16px;font-weight:600;color:#fff;background:rgba(0,0,0,.25)}
+.kx strong{display:block;margin-top:4px;font-size:clamp(64px,7vw,98px);line-height:1;font-weight:800;letter-spacing:-.05em;color:#fff;font-variant-numeric:tabular-nums}
+.kx strong b{font-weight:800}
+.kx strong small{font-size:.4em;margin-left:4px;color:var(--rose);letter-spacing:0}
+.ks{margin-top:6px;font-size:15px;color:rgba(255,255,255,.65)}
+.kp{margin:0;position:relative;border-radius:14px;overflow:hidden;box-shadow:0 20px 40px rgba(0,0,0,.45);border:4px solid #fff;opacity:0;transition:opacity .8s,transform .8s cubic-bezier(.2,.8,.2,1)}
+.kp img{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 20%}
+/* 첫 화면 결과지 카드 (실제 측정값으로 그린 그래픽) */
+.rs{background:#fbfaf7;color:#1d1d1d;padding:0 0 18px;text-align:left}
+.rs .rh{display:flex;justify-content:space-between;align-items:baseline;padding:14px 18px 12px;border-bottom:3px solid #23304a}
+.rs .rh b{font-size:19px;letter-spacing:-.04em;color:#23304a}
+.rs .rh span{font-size:12px;color:#7d7a72}
+.rs .rt{margin:14px 18px 6px;padding:4px 8px;background:#23304a;color:#fff;font-size:12px;font-weight:700}
+.rs .rr{display:grid;grid-template-columns:64px 1fr;align-items:center;margin:0 18px;height:46px;border-bottom:1px solid #e2dfd7}
+.rs .rr span{font-size:13.5px;font-weight:700;letter-spacing:-.04em}
+.rs .rt2{position:relative;height:100%;border-left:1px solid #d9d5cc}
+.rs .sd{position:absolute;left:40%;width:22%;top:0;bottom:0;background:#d3e4f4}
+.rs .br{position:absolute;left:0;top:50%;height:9px;margin-top:-4.5px;width:0;background:#1b1b1b;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.rs .vl{position:absolute;top:50%;left:0;transform:translate(8px,-50%);font:700 16px/1 "Courier New",ui-monospace,monospace;white-space:nowrap;transition:left 1.2s cubic-bezier(.2,.8,.2,1)}
+.rs .dt{position:absolute;right:0;top:-4px;font-family:"Nanum Pen Script",cursive;font-size:26px;line-height:1;color:#d32b2b;opacity:0;transform:rotate(-7deg) scale(.4);transition:opacity .3s,transform .4s cubic-bezier(.3,1.6,.5,1)}
+.rs.go .dt{opacity:1;transform:rotate(-7deg) scale(1)}
+.rs .rf{margin:12px 18px 0;font-size:11.5px;color:#8b877e}
+.kp figcaption{position:static;padding:10px;background:rgba(20,8,8,.85);color:#fff;font-size:16px;font-weight:700}
+.kp.af figcaption{background:var(--wine)}
+.kp.bf{transform:translateX(-60px) rotate(-8deg)}
+.kp.af{transform:translateX(60px) rotate(8deg)}
+.kp.bf.on{opacity:1;transform:rotate(-4deg)}
+.kp.af.on{opacity:1;transform:rotate(4deg)}
+.kwrap.sw .kp.on{opacity:0;transition:opacity .45s}
+.kwrap.sw .kx.on{opacity:0;transform:translateY(14px)}
+.bsec{background:var(--dark2);color:#fff;padding:90px 0}
+.bsec .h2 em{color:var(--rose)}
+.bsec .swipe{color:rgba(255,255,255,.6)}
 .bas{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
 .bc{background:var(--white);color:var(--ink);border-radius:16px;overflow:hidden}
 .bc .ph{position:relative;background:#120706}
 .bc img{width:100%;aspect-ratio:1/1;object-fit:cover}
-.bc .ph span{position:absolute;top:0;background:rgba(20,8,8,.82);color:#fff;font-size:14px;font-weight:700;padding:6px 12px}
+.bc .ph > span{position:absolute;top:0;background:rgba(20,8,8,.82);color:#fff;font-size:14px;font-weight:700;padding:6px 12px}
 .bc .ph .l{left:0;border-radius:0 0 10px 0}
 .bc .ph .r{left:50%;background:var(--wine);border-radius:0 0 10px 0}
 .bc .ph .one{left:0;background:var(--wine);border-radius:0 0 10px 0}
+/* 결과지 비교 그래픽 (관리 전 → 관리 후, 화면에 보이면 반복 재생) */
+.ib{background:#0b0808;display:flex;flex-direction:column;justify-content:center;padding:52px 16px 26px}
+.ib .tg{margin:0 0 8px;text-align:center;font-size:21px;font-weight:700;letter-spacing:-.02em;color:#e3ec9c;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
+.ib .tg.af{margin-top:18px;color:#f3b4bd}
+.ib .strip{background:#f2f1ee;border-radius:3px;padding:2px 10px;opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s}
+.ib .rw{display:grid;grid-template-columns:62px 1fr;align-items:center;height:34px;border-bottom:1px solid #d4d2cc}
+.ib .rw:last-child{border-bottom:0}
+.ib .kn{font-size:12.5px;font-weight:700;color:#2b2b2b;letter-spacing:-.03em}
+.ib .tr{position:relative;height:100%;border-left:1px solid #d4d2cc}
+.ib .std{position:absolute;left:44%;width:20%;top:0;bottom:0;background:#c3dcf1}
+.ib .bar{position:absolute;left:0;top:50%;height:8px;margin-top:-4px;width:0;background:#141414}
+.ib .v{position:absolute;top:50%;left:0;transform:translate(7px,-50%);font:700 15px/1 "Courier New",ui-monospace,monospace;color:#111;white-space:nowrap}
+.ib .bar,.ib .v{transition:width 1.1s cubic-bezier(.2,.8,.2,1),left 1.1s cubic-bezier(.2,.8,.2,1)}
+.ib .d{position:absolute;right:2px;top:50%;font-family:"Nanum Pen Script",cursive;font-size:27px;line-height:1;color:#d32b2b;white-space:nowrap;opacity:0;transform:translateY(-50%) rotate(-6deg) scale(.5);transition:opacity .35s,transform .35s cubic-bezier(.3,1.6,.5,1)}
+.ib.s1 .b{opacity:1;transform:none}
+.ib.s2 .a{opacity:1;transform:none}
+.ib.s3 .d{opacity:1;transform:translateY(-50%) rotate(-6deg) scale(1)}
+.ib.s3 .d:nth-child(1){transition-delay:.15s}
 .bc dl{display:grid;grid-template-columns:repeat(3,1fr);margin:0}
 .bc dl div{padding:16px 4px 4px;text-align:center;border-left:1px solid var(--line)}
 .bc dl div:first-child{border-left:0}
@@ -58,7 +119,7 @@ a{color:inherit}
 .bc dd{margin:4px 0 0;font-size:clamp(22px,2.2vw,28px);font-weight:800;letter-spacing:-.04em;color:var(--wine);line-height:1.2;white-space:nowrap}
 .bc .who{margin:0;padding:10px 0 14px;text-align:center;font-size:13px;color:var(--sub)}
 .swipe{display:none;margin:10px 0 0;text-align:center;font-size:12.5px;color:rgba(255,255,255,.6)}
-.ba-note{margin:12px 0 0;font-size:12px;color:rgba(255,255,255,.5);line-height:1.6;text-align:center}
+.ba-note{margin:24px 0 0;font-size:12px;color:rgba(255,255,255,.5);line-height:1.6;text-align:center}
 .dealbar{display:flex;align-items:center;justify-content:space-between;gap:32px;margin-top:32px;padding:26px 34px;border-radius:18px;background:rgba(0,0,0,.28);border:1.5px solid rgba(212,128,139,.5)}
 .deal .dl{margin:0 0 6px;font-size:17px;font-weight:600;color:rgba(255,255,255,.85)}
 .deal .pr{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
@@ -279,14 +340,37 @@ footer .copy{color:#5f504a;margin-top:14px}
   .gnb .logo{font-size:28px}
   .gnb .cta{grid-column:3;padding:9px 14px;font-size:13.5px}
   .hero{padding:84px 0 52px}
-  .hero{padding:78px 0 44px}
-  .hero .tag{font-size:14px;margin-bottom:6px}
-  .hero h1{font-size:27px}
-  .hero h1 br{display:inline}
+  .hero{padding:76px 0 40px}
+  .rot{height:34px;margin-bottom:10px}
+  .rot span{font-size:13.5px;padding:6px 12px}
+  .type{font-size:23px;min-height:2.6em;display:flex;align-items:center;justify-content:center;flex-wrap:wrap}
+  .kwrap{grid-template-columns:1fr 1fr;grid-template-areas:"bf af" "k k";gap:14px 16px;margin-top:16px}
+  .kp.bf{grid-area:bf}
+  .kp.af{grid-area:af}
+  .kp{border-width:3px}
+  .rs{padding-bottom:8px}
+  .rs .rh{padding:8px 8px 6px;border-bottom-width:2px}
+  .rs .rh b{font-size:14px}
+  .rs .rh span{display:none}
+  .rs .rt{margin:8px 8px 2px;font-size:10px;padding:3px 6px}
+  .rs .rr{grid-template-columns:1fr;height:auto;margin:0 8px;padding:5px 0 3px}
+  .rs .rr span{font-size:11.5px}
+  .rs .rt2{height:20px}
+  .rs .br{height:7px;margin-top:-3.5px}
+  .rs .vl{font-size:12px;transform:translate(5px,-50%)}
+  .rs .dt{font-size:20px;top:-17px}
+  .rs .rf{margin:6px 8px 0;font-size:9.5px}
+  .kp figcaption{font-size:13.5px;padding:6px}
+  .kpi{grid-area:k;min-width:0;flex-direction:row;gap:0}
+  .kx{flex:1}
+  .kl{font-size:12.5px;padding:3px 8px}
+  .kx strong{font-size:40px;margin-top:6px}
+  .ks{font-size:11.5px;margin-top:4px}
+  .bsec{padding:64px 0}
   .bas{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:82%;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;margin:22px -20px 0;padding:0 20px;scrollbar-width:none}
   .bas::-webkit-scrollbar{display:none}
   .bc{scroll-snap-align:center}
-  .bc .ph span{font-size:12.5px;padding:5px 10px}
+  .bc .ph > span{font-size:12.5px;padding:5px 10px}
   .bc dl div{padding:12px 2px 2px}
   .bc dt{font-size:12px}
   .bc dd{font-size:21px}
@@ -368,29 +452,18 @@ footer .copy{color:#5f504a;margin-top:14px}
 <!-- 1 첫 화면: 비포애프터 + 3만원 -->
 <section class="hero">
  <div class="in">
-  <div class="h-top">
-   <p class="tag">운동 대신, 누워서 받는 체지방 관리</p>
-   <h1>관리 전후,<br> 인바디로 직접 확인하세요</h1>
+  <p class="rot"><span id="rot">청담점 방문 고객의 실제 인바디 기록</span></p>
+  <h1 class="type"><span id="typed">누워서 받은 관리 1회, 인바디가 달라졌어요</span></h1>
+  <div class="kwrap">
+   <figure class="kp bf"><div class="rs" data-k="b"></div><figcaption>관리 전</figcaption></figure>
+   <div class="kpi">
+    <div class="kx"><span class="kl">체지방량</span><strong><b data-n="2.1" data-s="-">-2.1</b><small>kg</small></strong><span class="ks">8.9kg → 6.8kg</span></div>
+    <div class="kx"><span class="kl">골격근량</span><strong><b data-n="1.1" data-s="+">+1.1</b><small>kg</small></strong><span class="ks">24.2kg → 25.3kg</span></div>
+    <div class="kx"><span class="kl">복부둘레</span><strong><b data-n="2.4" data-s="-">-2.4</b><small>cm</small></strong><span class="ks">관리 전후 비교</span></div>
+   </div>
+   <figure class="kp af"><div class="rs" data-k="a"></div><figcaption>관리 후</figcaption></figure>
   </div>
-  <div class="bas">
-   <div class="bc">
-    <div class="ph"><img src="img/hero_ba1.jpg" alt="관리 전 인바디 측정과 관리 후 결과지"><span class="l">관리 전</span><span class="r">관리 후</span></div>
-    <dl><div><dt>체지방량</dt><dd>-2.1kg</dd></div><div><dt>골격근량</dt><dd>+1.1kg</dd></div><div><dt>복부둘레</dt><dd>-2.4cm</dd></div></dl>
-    <p class="who">청담점 방문 고객 · 체지방량 8.9 → 6.8kg</p>
-   </div>
-   <div class="bc">
-    <div class="ph"><img src="img/hero_ba2.jpg" alt="관리 전후 변화량이 적힌 인바디 결과지"><span class="one">관리 전후 변화 기록</span></div>
-    <dl><div><dt>체지방량</dt><dd>-1.4kg</dd></div><div><dt>골격근량</dt><dd>+0.6kg</dd></div><div><dt>내장지방 면적</dt><dd>-8cm²</dd></div></dl>
-    <p class="who">예비부부 방문 고객 · 관리 후 체지방량 12.9kg</p>
-   </div>
-   <div class="bc">
-    <div class="ph"><img src="img/hero_ba3.jpg" alt="관리 전후 인바디 결과 비교"><span class="one">관리 전후 결과지 비교</span></div>
-    <dl><div><dt>체지방량</dt><dd>-0.7kg</dd></div><div><dt>골격근량</dt><dd>+0.2kg</dd></div><div><dt>내장지방 면적</dt><dd>-7cm²</dd></div></dl>
-    <p class="who">청담점 방문 고객 · 골격근량 20.7 → 20.9kg</p>
-   </div>
-  </div>
-  <p class="swipe">옆으로 넘겨서 결과지 더 보기</p>
-  <p class="ba-note">아실리아 방문 고객의 실제 관리 전후 인바디 측정 결과이며, 개인에 따라 결과는 다를 수 있습니다.</p>
+  <p class="ba-note">아실리아 방문 고객 3명의 실제 관리 전후 인바디 측정값을 옮겨 그린 그래프이며, 개인에 따라 결과는 다를 수 있습니다.</p>
   <div class="dealbar">
    <div class="deal">
     <p class="dl">첫 방문 체험가</p>
@@ -421,7 +494,7 @@ footer .copy{color:#5f504a;margin-top:14px}
 <section class="chart" id="how">
  <div class="in">
   <div class="turn rv">
-   <p>그래서 아실리아는</p>
+   <p>아실리아는</p>
    <p class="big"><s>더 열심히</s>가 아니라<br class="m"> <b>더 편하게</b>를</p>
    <p class="big">택했습니다</p>
   </div>
@@ -730,6 +803,129 @@ var W = ["일","월","화","수","목","금","토"];
   els.forEach(function(e){ io.observe(e); });
   var bo = new IntersectionObserver(function(es){ if(es[0].isIntersecting){ grow(); bo.disconnect(); } },{threshold:.3});
   bo.observe(document.getElementById("bars"));
+})();
+
+// 첫 화면: 문구 타이핑 + 사진 등장 + 숫자 카운트업 + 위 라벨 순환
+(function(){
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var kps = document.querySelectorAll(".kp"), ks = document.querySelectorAll(".kpi .kx");
+  // 방문 고객 3명 실제 측정값 [항목, 관리 전, 관리 후, 단위, 그래프 최대값] / 큰 숫자 [항목, 부호, 변화량, 단위, 보조 문구]
+  var CASES = [
+    { who:"청담점 방문 고객",
+      rows:[["체지방량",8.9,6.8,"kg",25],["골격근량",24.2,25.3,"kg",40],["체지방률",17.0,13.0,"%",45]],
+      kpi:[["체지방량","-",2.1,"kg","8.9kg → 6.8kg"],["골격근량","+",1.1,"kg","24.2kg → 25.3kg"],["복부둘레","-",2.4,"cm","관리 전후 비교"]] },
+    { who:"방문 고객",
+      rows:[["체지방량",19.6,17.7,"kg",25],["골격근량",21.3,22.1,"kg",40],["체지방률",33.4,30.8,"%",45]],
+      kpi:[["체지방량","-",1.9,"kg","19.6kg → 17.7kg"],["골격근량","+",0.8,"kg","21.3kg → 22.1kg"],["체지방률","-",2.6,"%p","33.4% → 30.8%"]] },
+    { who:"예비부부 방문 고객",
+      rows:[["체지방량",14.3,12.9,"kg",25],["골격근량",19.6,20.2,"kg",40],["내장지방 면적",42,34,"cm²",100]],
+      kpi:[["체지방량","-",1.4,"kg","14.3kg → 12.9kg"],["골격근량","+",0.6,"kg","19.6kg → 20.2kg"],["내장지방 면적","-",8,"cm²","42 → 34cm²"]] }
+  ];
+  var kwrap = document.querySelector(".kwrap"), rot = document.getElementById("rot"), cur = 0;
+  function fx(v, u){ return u === "cm²" ? String(Math.round(v)) : v.toFixed(1); }
+  function count(b, to, s, dec){
+    var t0 = Date.now(), D = 1300;
+    clearInterval(b._t);
+    b._t = setInterval(function(){ var k = Math.min(1, (Date.now() - t0) / D); k = 1 - Math.pow(1 - k, 3);
+      b.textContent = s + (to * k).toFixed(dec); if(k >= 1) clearInterval(b._t); }, 30);
+  }
+  function fill(c){
+    document.querySelectorAll(".rs").forEach(function(rs){
+      var a = rs.dataset.k === "a";
+      rs.classList.remove("go");
+      rs.innerHTML = '<div class="rh"><b>' + (a ? "관리 후" : "관리 전") + ' 인바디</b><span>' + c.who + '</span></div><p class="rt">체성분 · 비만 분석</p>' +
+        c.rows.map(function(r){
+          var v = a ? r[2] : r[1], d = r[2] - r[1], du = r[3] === "%" ? "%p" : r[3];
+          return '<div class="rr"><span>' + r[0] + '</span><div class="rt2"><i class="sd"></i><b class="br" data-w="' + (v / r[4] * 62).toFixed(1) + '"></b><em class="vl">' + fx(v, r[3]) + r[3] + '</em>' +
+            (a ? '<em class="dt">' + (d > 0 ? "+" : "") + fx(d, r[3]) + du + '</em>' : '') + '</div></div>';
+        }).join("") + '<p class="rf">결과지 수치를 옮겨 그린 그래프</p>';
+    });
+    ks.forEach(function(k, n){
+      var p = c.kpi[n];
+      k.querySelector(".kl").textContent = p[0];
+      k.querySelector("small").textContent = p[3];
+      k.querySelector(".ks").textContent = p[4];
+      k.querySelector("b").textContent = p[1] + (p[3] === "cm²" ? p[2] : p[2].toFixed(1));
+    });
+    rot.textContent = c.who + "의 실제 인바디 기록";
+  }
+  function draw(c, instant){
+    document.querySelectorAll(".rs").forEach(function(rs, n){
+      setTimeout(function(){
+        rs.querySelectorAll(".br").forEach(function(b){ b.style.width = b.dataset.w + "%"; b.nextElementSibling.style.left = b.dataset.w + "%"; });
+        if(rs.dataset.k === "a") setTimeout(function(){ rs.classList.add("go"); }, instant ? 0 : 1300);
+      }, instant ? 0 : n * 450);
+    });
+    if(!instant) ks.forEach(function(k, n){ var p = c.kpi[n]; setTimeout(function(){ count(k.querySelector("b"), p[2], p[1], p[3] === "cm²" ? 0 : 1); }, n * 300); });
+  }
+  fill(CASES[0]);
+  if(reduce){ kps.forEach(function(e){ e.classList.add("on"); }); ks.forEach(function(e){ e.classList.add("on"); }); draw(CASES[0], true); return; }
+
+  var el = document.getElementById("typed"), full = el.textContent, i = 0;
+  el.textContent = "";
+  (function type(){ el.textContent = full.slice(0, ++i); if(i < full.length) setTimeout(type, 55); })();
+  setTimeout(function(){ kps.forEach(function(e){ e.classList.add("on"); }); }, 300);
+  ks.forEach(function(k, n){ setTimeout(function(){ k.classList.add("on"); }, 700 + n * 300); });
+  setTimeout(function(){ draw(CASES[0]); }, 800);
+
+  // 7초마다 다음 고객으로
+  function next(){
+    cur = (cur + 1) % CASES.length;
+    kwrap.classList.add("sw"); rot.classList.add("out");
+    setTimeout(function(){
+      fill(CASES[cur]);
+      rot.className = "in0"; rot.offsetWidth; rot.className = "";
+      kwrap.classList.remove("sw");
+      setTimeout(function(){ draw(CASES[cur]); }, 250);
+    }, 500);
+  }
+  setInterval(next, 7000);
+})();
+
+// 결과지 비교 카드: 관리 전 → 관리 후 막대 이동 → 변화량 손글씨 (보일 때 반복)
+(function(){
+  var W0 = 0.6, EASE = 1100;
+  function pct(v, max){ return (v / max * W0 * 100).toFixed(1) + "%"; }
+  document.querySelectorAll(".ib").forEach(function(ib){
+    var rows = JSON.parse(ib.dataset.rows);
+    function strip(cls, idx){
+      return '<div class="strip ' + cls + '">' + rows.map(function(r){
+        return '<div class="rw"><span class="kn">' + r[0] + '</span><div class="tr"><i class="std"></i><b class="bar"></b><span class="v"></span>' +
+          (cls === "a" ? '<span class="d">' + r[3] + '</span>' : '') + '</div></div>';
+      }).join("") + '</div>';
+    }
+    ib.innerHTML = '<p class="tg b">관리 전</p>' + strip("b") + '<p class="tg af a">관리 후</p>' + strip("a");
+    var bS = ib.querySelectorAll(".strip.b .rw"), aS = ib.querySelectorAll(".strip.a .rw"), timers = [], loop = null;
+    function set(rw, v, max, anim){
+      var bar = rw.querySelector(".bar"), tx = rw.querySelector(".v");
+      if(!anim){ bar.style.transition = tx.style.transition = "none"; }
+      bar.style.width = tx.style.left = pct(v, max);
+      if(!anim){ bar.offsetWidth; bar.style.transition = tx.style.transition = ""; }
+    }
+    function count(el, from, to){
+      var t0 = performance.now();
+      (function step(t){ var k = Math.min(1, (t - t0) / EASE); k = 1 - Math.pow(1 - k, 3);
+        el.textContent = (from + (to - from) * k).toFixed(1); if(k < 1) requestAnimationFrame(step); })(t0);
+    }
+    function reset(){
+      timers.forEach(clearTimeout); timers = []; ib.className = "ib";
+      rows.forEach(function(r, i){ set(bS[i], 0, r[4]); set(aS[i], r[1], r[4]); bS[i].querySelector(".v").textContent = ""; aS[i].querySelector(".v").textContent = r[1].toFixed(1); });
+    }
+    function run(){
+      reset();
+      timers.push(setTimeout(function(){ ib.classList.add("s1"); rows.forEach(function(r, i){ set(bS[i], r[1], r[4], true); count(bS[i].querySelector(".v"), 0, r[1]); }); }, 150));
+      timers.push(setTimeout(function(){ ib.classList.add("s2"); }, 1500));
+      timers.push(setTimeout(function(){ rows.forEach(function(r, i){ set(aS[i], r[2], r[4], true); count(aS[i].querySelector(".v"), r[1], r[2]); }); }, 2000));
+      timers.push(setTimeout(function(){ ib.classList.add("s3"); }, 3200));
+    }
+    function final(){ reset(); ib.classList.add("s1","s2","s3"); rows.forEach(function(r, i){ set(bS[i], r[1], r[4]); set(aS[i], r[2], r[4]); bS[i].querySelector(".v").textContent = r[1].toFixed(1); aS[i].querySelector(".v").textContent = r[2].toFixed(1); }); }
+    if(matchMedia("(prefers-reduced-motion: reduce)").matches || !("IntersectionObserver" in window)){ final(); return; }
+    reset();
+    new IntersectionObserver(function(es){
+      if(es[0].isIntersecting){ if(!loop){ run(); loop = setInterval(run, 8000); } }
+      else { clearInterval(loop); loop = null; }
+    }, {threshold:.55}).observe(ib);
+  });
 })();
 
 // 공통: 전화번호 자동 하이픈
