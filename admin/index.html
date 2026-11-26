@@ -232,7 +232,7 @@
   var $ = function(id){ return document.getElementById(id); };
   var cfg = window.ASILIA_CONFIG || {};
   $('fStatus').innerHTML += STATUSES.map(function(s){ return '<option>' + s + '</option>'; }).join('');
-  $('pTime').innerHTML = TIMES.map(function(t){ return '<option>' + t + '</option>'; }).join('');
+  $('pTime').innerHTML = '<option value="">시간 미정</option>' + TIMES.map(function(t){ return '<option>' + t + '</option>'; }).join('');
   if (!cfg.SHEET_API_URL || cfg.SHEET_API_URL.indexOf('YOUR-') >= 0) {
     $('loginErr').textContent = 'config.js에 구글 시트 웹 앱 주소를 먼저 넣어 주세요.';
     return;
@@ -299,7 +299,7 @@
     return '';
   }
   function vtext(l){
-    if (!l.date) return '-';
+    if (!l.date) return '일정 미정 (간편신청)';
     var d = new Date(l.date + 'T00:00:00');
     return (d.getMonth()+1) + '월 ' + d.getDate() + '일(' + W[d.getDay()] + ') ' + (l.time || '');
   }
@@ -373,6 +373,8 @@
   // ---------- 상세 ----------
   var pick = null;
   function smsText(l){
+    if (!l.date) return '[아실리아] ' + (l.name || '고객') + '님, ' + (l.branch || '') + ' 첫 방문 체험(3만원) 신청이 접수됐어요.\n' +
+      '아실리아 매니저가 곧 전화드려 편한 날짜와 시간을 잡아드릴게요. 모르는 번호라도 꼭 받아주세요.';
     return '[아실리아] ' + (l.name || '고객') + '님, ' + l.branch + ' ' + vtext(l) + ' 첫 방문 체험 예약이 접수됐어요.\n' +
       '아실리아 매니저가 곧 전화드려 예약을 확정해 드릴게요. 모르는 번호라도 꼭 받아주세요.';
   }
@@ -395,7 +397,7 @@
     ];
     $('pInfo').innerHTML = info.map(function(i){ return '<div><dt>' + i[0] + '</dt><dd>' + esc(i[1]) + '</dd></div>'; }).join('');
     $('pDate').value = l.date || '';
-    $('pTime').value = TIMES.indexOf(l.time) >= 0 ? l.time : TIMES[0];
+    $('pTime').value = TIMES.indexOf(l.time) >= 0 ? l.time : '';
     drawSts();
     $('pMemo').value = l.memo || '';
     $('pMsg').textContent = '';
