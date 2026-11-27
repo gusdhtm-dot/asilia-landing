@@ -787,6 +787,43 @@ var W = ["일","월","화","수","목","금","토"];
   fbq('init', id); fbq('track', 'PageView');
 })();
 
+// 방문 기록 (유입·체류시간·스크롤) → 구글 시트 '방문' 탭. 이름·연락처 등 개인정보는 보내지 않음
+(function(){
+  var api = (CONFIG.SHEET_API_URL && CONFIG.SHEET_API_URL.indexOf("YOUR-") < 0) ? CONFIG.SHEET_API_URL : null;
+  if(!api || navigator.webdriver) return;
+  function rid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  var uid;
+  try{ uid = localStorage.getItem("asilia_uid"); if(!uid){ uid = rid(); localStorage.setItem("asilia_uid", uid); } }catch(e){ uid = rid(); }
+  var v = Object.assign({ vid:rid(), uid:uid, dwell:0, scroll:0, form:false, lead:"",
+    device: /Mobi|Android|iPhone|iPod/i.test(navigator.userAgent) ? "모바일" : "PC", referrer: document.referrer || "" }, UTM);
+  // 체류시간: 화면이 보이는 동안만 셈
+  var since = document.visibilityState === "visible" ? Date.now() : 0, acc = 0;
+  function dwell(){ return Math.min(1800, Math.round((acc + (since ? Date.now() - since : 0)) / 1000)); }
+  // 스크롤: 가장 많이 내려간 위치(%), 예약 폼이 화면에 들어왔는지
+  function onScroll(){
+    var total = document.documentElement.scrollHeight || 1;
+    var p = Math.min(100, Math.round((scrollY + innerHeight) / total * 100));
+    if(p > v.scroll) v.scroll = p;
+    var bk = document.getElementById("book");
+    if(!v.form && bk && bk.getBoundingClientRect().top < innerHeight * .8) v.form = true;
+  }
+  addEventListener("scroll", onScroll, {passive:true});
+  function send(){
+    v.dwell = dwell();
+    var body = JSON.stringify({ action:"visit", data:v }), ok = false;
+    try{ ok = navigator.sendBeacon && navigator.sendBeacon(api, new Blob([body], {type:"text/plain"})); }catch(e){}
+    if(!ok){ try{ fetch(api, {method:"POST", body:body, keepalive:true}); }catch(e){} }
+  }
+  document.addEventListener("visibilitychange", function(){
+    if(document.visibilityState === "hidden"){ if(since){ acc += Date.now() - since; since = 0; } send(); }
+    else since = Date.now();
+  });
+  addEventListener("pagehide", function(){ if(document.visibilityState !== "hidden") send(); });
+  onScroll();
+  setTimeout(send, 1500); // 들어오자마자 1회 기록 (유입 인원)
+  window.asiliaVisit = { lead: function(type){ v.lead = type; if(type === "신청서") v.form = true; send(); } };
+})();
+
 // 머리글: 첫 화면 지나면 흰 바탕
 (function(){
   var g = document.getElementById("gnb");
@@ -942,7 +979,8 @@ async function send(data){
   var r = await res.json();
   if(!r.ok) throw new Error(r.error || "fail");
 }
-function toThanks(branch, when){
+function toThanks(branch, when, type){
+  if(window.asiliaVisit) asiliaVisit.lead(type);
   try{ sessionStorage.setItem("asilia_booking", JSON.stringify({branch:branch, when:when, lead:1})); }catch(e){}
   location.href = "thanks/";
 }
@@ -1031,7 +1069,7 @@ function toThanks(branch, when){
       sending = false; btn.disabled = false; btn.textContent = "첫 방문 3만원 예약 신청";
       err.textContent = x.message === "not_configured" ? "접수 설정 전이에요. 잠시 후 다시 시도해 주세요." : "접수에 실패했어요. 잠시 후 다시 시도해 주세요."; return;
     }
-    toThanks(br.value, (d.getMonth()+1)+"월 "+d.getDate()+"일("+W[d.getDay()]+") "+tm.value);
+    toThanks(br.value, (d.getMonth()+1)+"월 "+d.getDate()+"일("+W[d.getDay()]+") "+tm.value, "신청서");
   });
 })();
 
@@ -1061,7 +1099,7 @@ function toThanks(branch, when){
       sending = false; go.disabled = false; go.textContent = "방문 예약";
       return msg(x.message === "not_configured" ? "접수 설정 전이에요" : "접수에 실패했어요. 잠시 후 다시 시도해 주세요.");
     }
-    toThanks(br.value, "방문 일정은 매니저 통화로 정해요");
+    toThanks(br.value, "방문 일정은 매니저 통화로 정해요", "간편신청");
   };
 })();
 
